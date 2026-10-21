@@ -106,6 +106,19 @@ function Users.Save()
     PersistentDB:Set(DATABASE_KEY, savedUsers)
 end
 
+-- Reset to default
+function Users.Reset()
+    -- Clear all existing users
+    users = {}
+    nextUserId = 1
+
+    -- Create default user
+    Users.Create()
+
+    -- Save the default state
+    Users.Save()
+end
+
 -- Print all users in table (unused)
 function Users.PrintAll()
     for _, user in ipairs(users) do

@@ -281,4 +281,13 @@ function Players.Destroy()
     end
 end
 
+function Players.Reset()
+    -- Remove all existing boxes & tooltips
+    Players.Destroy()
+
+    -- Restore default
+    highlightsEnabled = true
+    displayNamesEnabled = true
+end
+
 return Players

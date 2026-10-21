@@ -37,14 +37,11 @@ end
 
 -- Create a new user row in UI
 local function addUserRow(parent, user)
-    local rowGroup = "user_" .. user.id
-
     user.controls.textField = parent:AddTextField({
         text = user.username,
         placeholder = "Username",
         width = 250,
-        columnGap = 2,
-        rowBackgroundGroup = rowGroup,
+        columnGap = 10,
 
         onChange = function(field, reason, content)
             if content ~= nil then
@@ -55,6 +52,8 @@ local function addUserRow(parent, user)
         onSubmit = function(field, content)
             if content ~= nil then
                 user.username = content
+
+                Users.Save()
             end
         end
     })
@@ -63,7 +62,7 @@ local function addUserRow(parent, user)
         value = user.colour,
         inline = true,
         alphaSlider = true,
-        rowBackgroundGroup = rowGroup,
+        offsetY = 3,
 
         onChange = function(picker, colour)
             if type(colour) == "number" then
@@ -80,7 +79,7 @@ local function addUserRow(parent, user)
             end,
             {
                 inline = true,
-                rowBackgroundGroup = rowGroup
+                tooltip = "Delete Highlight"
             }
         )
     end
@@ -129,8 +128,7 @@ function Settings.OnLayerReady(event)
 
     settingsView = prettyui.SimpleView.new(rootLayer, {
         width = rootLayer.width,
-        height = rootLayer.height,
-        rowBackgroundColours = { 0x24211EFF, 0x2E2825FF }
+        height = rootLayer.height
     })
 
     local selectedValues = {}
@@ -142,6 +140,8 @@ function Settings.OnLayerReady(event)
     if Players.GetDisplayNamesEnabled() then
         table.insert(selectedValues, "showDisplayNames")
     end
+
+    settingsView:AddTitle({ text = "Display Settings" })
 
     settingsView:AddCheckboxButton({
         {
@@ -161,14 +161,24 @@ function Settings.OnLayerReady(event)
         end
     })
 
-    settingsView:AddSimpleButton("+ Add User", addUser, {
-        rowBackgroundGroup = "row1"
-    })
+    settingsView:AddFancyButton("Reset to Default", function(self, active)
+        prettyui.Confirm.new(rootLayer, {
+            body = "Are you sure you wish to reset all settings to default? This will clear your saved data as well.",
+            confirmVariant = "negative",
 
-    settingsView:AddTitle({
-        text = "Usernames",
-        rowBackgroundGroup = "row1"
-    })
+            onConfirm = function()
+                -- Reset to default
+                Players.Reset()
+                Users.Reset()
+                -- Redraw settings
+                Settings.OnLayerReady({ component = rootLayer })
+            end
+        }) end,
+        { variant = "negative", tooltip = "Resets the plugin back to default." }
+    )
+
+    settingsView:AddTitle({ text = "Usernames" })
+    settingsView:AddSimpleButton("+ Add User", addUser, { inline = true })
 
     Users.EnsureDefault() -- Ensure there is at least 1 user
 
