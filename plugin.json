@@ -1,0 +1,9 @@
+{
+    "name": "Player Highlighter",
+    "version": "1.0.0",
+    "contactEmailAddress": "wittypleb@gmail.com",
+    "hasSettingsIcon": true,
+    "requiredDependencies": {
+        "prettyui": 6398181
+    }
+}
